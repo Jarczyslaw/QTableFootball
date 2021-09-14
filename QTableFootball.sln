@@ -1,0 +1,80 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTableFootball.App", "QTableFootball.App\QTableFootball.App.csproj", "{AC5DDE36-9467-4442-AFFC-F4DBAE65860C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JToolbox", "JToolbox", "{41ABB199-88A1-4052-9A10-7ABAE676265F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JToolbox.Desktop", "JToolbox.Desktop", "{7C4C29AD-A23E-4590-A049-B3726C52A3CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JToolbox.Misc", "JToolbox.Misc", "{FF490C45-8EC5-4642-BC5D-FE62999E4A0C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JToolbox.WPF", "JToolbox.WPF", "{310EAEE0-90F2-48A2-9E8D-E73239E8E0A3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JToolbox.Core", "JToolbox\JToolbox.Core\JToolbox.Core.csproj", "{274D89CF-4091-4856-86AD-2A3FD6678440}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JToolbox.Desktop.Core", "JToolbox\JToolbox.Desktop\JToolbox.Desktop.Core\JToolbox.Desktop.Core.csproj", "{F91C51E8-EEE9-405D-8D53-1BD1A8B462A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JToolbox.Desktop.Dialogs", "JToolbox\JToolbox.Desktop\JToolbox.Desktop.Dialogs\JToolbox.Desktop.Dialogs.csproj", "{7519097D-59FF-4717-A043-C083A7AA9A5D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JToolbox.Misc.Serializers", "JToolbox\JToolbox.Misc\JToolbox.Misc.Serializers\JToolbox.Misc.Serializers.csproj", "{FAA7FD49-FC0A-4E23-B76F-40E8233D9064}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JToolbox.WPF.Core", "JToolbox\JToolbox.WPF\JToolbox.WPF.Core\JToolbox.WPF.Core.csproj", "{56BEE9B3-2FCB-46E7-A837-D07F0BFCBD98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JToolbox.WPF.UI", "JToolbox\JToolbox.WPF\JToolbox.WPF.UI\JToolbox.WPF.UI.csproj", "{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC5DDE36-9467-4442-AFFC-F4DBAE65860C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC5DDE36-9467-4442-AFFC-F4DBAE65860C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC5DDE36-9467-4442-AFFC-F4DBAE65860C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC5DDE36-9467-4442-AFFC-F4DBAE65860C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{274D89CF-4091-4856-86AD-2A3FD6678440}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{274D89CF-4091-4856-86AD-2A3FD6678440}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{274D89CF-4091-4856-86AD-2A3FD6678440}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{274D89CF-4091-4856-86AD-2A3FD6678440}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F91C51E8-EEE9-405D-8D53-1BD1A8B462A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F91C51E8-EEE9-405D-8D53-1BD1A8B462A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F91C51E8-EEE9-405D-8D53-1BD1A8B462A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F91C51E8-EEE9-405D-8D53-1BD1A8B462A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7519097D-59FF-4717-A043-C083A7AA9A5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7519097D-59FF-4717-A043-C083A7AA9A5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7519097D-59FF-4717-A043-C083A7AA9A5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7519097D-59FF-4717-A043-C083A7AA9A5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAA7FD49-FC0A-4E23-B76F-40E8233D9064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAA7FD49-FC0A-4E23-B76F-40E8233D9064}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAA7FD49-FC0A-4E23-B76F-40E8233D9064}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAA7FD49-FC0A-4E23-B76F-40E8233D9064}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56BEE9B3-2FCB-46E7-A837-D07F0BFCBD98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56BEE9B3-2FCB-46E7-A837-D07F0BFCBD98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56BEE9B3-2FCB-46E7-A837-D07F0BFCBD98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56BEE9B3-2FCB-46E7-A837-D07F0BFCBD98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7C4C29AD-A23E-4590-A049-B3726C52A3CB} = {41ABB199-88A1-4052-9A10-7ABAE676265F}
+		{FF490C45-8EC5-4642-BC5D-FE62999E4A0C} = {41ABB199-88A1-4052-9A10-7ABAE676265F}
+		{310EAEE0-90F2-48A2-9E8D-E73239E8E0A3} = {41ABB199-88A1-4052-9A10-7ABAE676265F}
+		{274D89CF-4091-4856-86AD-2A3FD6678440} = {41ABB199-88A1-4052-9A10-7ABAE676265F}
+		{F91C51E8-EEE9-405D-8D53-1BD1A8B462A9} = {7C4C29AD-A23E-4590-A049-B3726C52A3CB}
+		{7519097D-59FF-4717-A043-C083A7AA9A5D} = {7C4C29AD-A23E-4590-A049-B3726C52A3CB}
+		{FAA7FD49-FC0A-4E23-B76F-40E8233D9064} = {FF490C45-8EC5-4642-BC5D-FE62999E4A0C}
+		{56BEE9B3-2FCB-46E7-A837-D07F0BFCBD98} = {310EAEE0-90F2-48A2-9E8D-E73239E8E0A3}
+		{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0} = {310EAEE0-90F2-48A2-9E8D-E73239E8E0A3}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {538EFC95-1C5A-4201-AEA2-45D21B1196AA}
+	EndGlobalSection
+EndGlobal
