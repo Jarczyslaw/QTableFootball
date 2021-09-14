@@ -1,17 +1,8 @@
-﻿using JToolbox.Core;
-
-namespace QTableFootball.App.ViewModels
+﻿namespace QTableFootball.App.ViewModels
 {
-    public class PlayerViewModel : NotifyPropertyChanged
+    public class PlayerViewModel : BaseItemViewModel
     {
-        private bool isSelected;
         private string name;
-
-        public bool IsSelected
-        {
-            get => isSelected;
-            set => Set(ref isSelected, value);
-        }
 
         public string Name
         {

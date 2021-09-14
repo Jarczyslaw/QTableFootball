@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JToolbox.WPF.Core", "JToolb
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JToolbox.WPF.UI", "JToolbox\JToolbox.WPF\JToolbox.WPF.UI\JToolbox.WPF.UI.csproj", "{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QTableFootball.Storage", "QTableFootball.Storage\QTableFootball.Storage.csproj", "{885A2F3F-0BF5-40FE-87B3-5077EB652C58}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9594D7EE-C5D6-4F07-8F3E-63B7C83E21D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{885A2F3F-0BF5-40FE-87B3-5077EB652C58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{885A2F3F-0BF5-40FE-87B3-5077EB652C58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{885A2F3F-0BF5-40FE-87B3-5077EB652C58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{885A2F3F-0BF5-40FE-87B3-5077EB652C58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

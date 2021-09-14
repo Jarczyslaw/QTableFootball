@@ -194,7 +194,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ViewModels\BaseItemViewModel.cs" />
     <Compile Include="ViewModels\PlayerViewModel.cs" />
+    <Compile Include="ViewModels\SquadViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -260,6 +262,10 @@
     <ProjectReference Include="..\JToolbox\JToolbox.WPF\JToolbox.WPF.UI\JToolbox.WPF.UI.csproj">
       <Project>{9594d7ee-c5d6-4f07-8f3e-63b7c83e21d0}</Project>
       <Name>JToolbox.WPF.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QTableFootball.Storage\QTableFootball.Storage.csproj">
+      <Project>{885a2f3f-0bf5-40fe-87b3-5077eb652c58}</Project>
+      <Name>QTableFootball.Storage</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

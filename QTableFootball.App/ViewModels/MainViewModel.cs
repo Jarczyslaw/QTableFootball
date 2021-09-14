@@ -17,28 +17,14 @@ namespace QTableFootball.App.ViewModels
 
         public MainViewModel()
         {
-            Players = new ObservableCollection<PlayerViewModel>(new System.Collections.Generic.List<PlayerViewModel>
-            {
-               new PlayerViewModel
-               {
-                   Name = "jarek"
-               },
-               new PlayerViewModel
-               {
-                   Name = "tomek"
-               },
-               new PlayerViewModel
-               {
-                   Name = "romek"
-               }
-            });
-
             UpdateHeaders();
         }
 
         public ObservableCollection<PlayerViewModel> Players { get; } = new ObservableCollection<PlayerViewModel>();
 
         public ObservableCollection<PlayerViewModel> ActivePlayers { get; } = new ObservableCollection<PlayerViewModel>();
+
+        public ObservableCollection<SquadViewModel> Squads { get; } = new ObservableCollection<SquadViewModel>();
 
         public PlayerViewModel SelectedPlayer
         {
@@ -192,7 +178,7 @@ namespace QTableFootball.App.ViewModels
             return true;
         }
 
-        public void UpdateHeaders()
+        private void UpdateHeaders()
         {
             PlayersHeader = $"All players - {Players.Count}";
             ActivePlayersHeader = $"Active players - {ActivePlayers.Count}";

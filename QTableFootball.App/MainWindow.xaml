@@ -25,6 +25,10 @@
         <DataTemplate x:Key="PlayerItemTemplate">
             <TextBlock Text="{Binding Name}" />
         </DataTemplate>
+
+        <DataTemplate x:Key="SquadItemTemplate">
+            <TextBlock />
+        </DataTemplate>
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -119,6 +123,11 @@
             </Button>
         </StackPanel>
 
-        <GroupBox Grid.Column="4" Header="Squads" />
+        <GroupBox Grid.Column="4" Header="Squads">
+            <ListBox
+                ItemTemplate="{StaticResource SquadItemTemplate}"
+                ItemsSource="{Binding Squads}"
+                SelectionMode="Single" />
+        </GroupBox>
     </Grid>
 </Window>
