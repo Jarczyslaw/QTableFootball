@@ -1,35 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace JToolbox.Core.Extensions
 {
     public static class IListExtensions
     {
-        private static Random random = new Random();
-
-        public static void Shuffle<T>(this IList<T> list)
-        {
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = random.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
-        }
-
-        public static List<int> IndexesOf<T>(this IList<T> @this, IList<T> entries)
-        {
-            var result = new List<int>();
-            foreach (var entry in entries)
-            {
-                result.Add(@this.IndexOf(entry));
-            }
-            result.Sort();
-            return result;
-        }
+        private static readonly Random random = new Random();
 
         public static List<T> GetByIndexes<T>(this IList<T> @this, IList<int> indexes)
         {
@@ -51,7 +28,58 @@ namespace JToolbox.Core.Extensions
             return result;
         }
 
+        public static List<int> IndexesOf<T>(this IList<T> @this, IList<T> entries)
+        {
+            var result = new List<int>();
+            foreach (var entry in entries)
+            {
+                result.Add(@this.IndexOf(entry));
+            }
+            result.Sort();
+            return result;
+        }
+
+        public static void Shuffle<T>(this IList<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = random.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+
+        public static void StrongShuffle<T>(this IList<T> list)
+        {
+            var provider = new RNGCryptoServiceProvider();
+            var n = list.Count;
+            while (n > 1)
+            {
+                var box = new byte[1];
+                do provider.GetBytes(box);
+                while (box[0] >= n * (byte.MaxValue / n));
+                var k = (box[0] % n);
+                n--;
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+
         #region ShiftLeft
+
+        public static void ShiftLeft<T>(this IList<T> @this, T entry)
+        {
+            ShiftLeftByIndex(@this, @this.IndexOf(entry));
+        }
+
+        public static void ShiftLeft<T>(this IList<T> @this, IList<T> entries)
+        {
+            ShiftLeftByIndexes(@this, @this.IndexesOf(entries));
+        }
 
         public static void ShiftLeftByIndex<T>(this IList<T> @this, int index)
         {
@@ -80,19 +108,19 @@ namespace JToolbox.Core.Extensions
             }
         }
 
-        public static void ShiftLeft<T>(this IList<T> @this, T entry)
-        {
-            ShiftLeftByIndex(@this, @this.IndexOf(entry));
-        }
-
-        public static void ShiftLeft<T>(this IList<T> @this, IList<T> entries)
-        {
-            ShiftLeftByIndexes(@this, @this.IndexesOf(entries));
-        }
-
         #endregion ShiftLeft
 
         #region ShiftRight
+
+        public static void ShiftRight<T>(this IList<T> @this, T entry)
+        {
+            ShiftRightByIndex(@this, @this.IndexOf(entry));
+        }
+
+        public static void ShiftRight<T>(this IList<T> @this, IList<T> entries)
+        {
+            ShiftRightByIndexes(@this, @this.IndexesOf(entries));
+        }
 
         public static void ShiftRightByIndex<T>(this IList<T> @this, int index)
         {
@@ -119,16 +147,6 @@ namespace JToolbox.Core.Extensions
                     indexes[i]++;
                 }
             }
-        }
-
-        public static void ShiftRight<T>(this IList<T> @this, T entry)
-        {
-            ShiftRightByIndex(@this, @this.IndexOf(entry));
-        }
-
-        public static void ShiftRight<T>(this IList<T> @this, IList<T> entries)
-        {
-            ShiftRightByIndexes(@this, @this.IndexesOf(entries));
         }
 
         #endregion ShiftRight
@@ -243,11 +261,6 @@ namespace JToolbox.Core.Extensions
 
         #region SetAsFirst
 
-        public static void SetAsFirstByIndex<T>(this IList<T> @this, int index)
-        {
-            @this.SetAsFirstByIndexes(new List<int> { index });
-        }
-
         public static void SetAsFirst<T>(this IList<T> @this, T item)
         {
             @this.SetAsFirstByIndex(@this.IndexOf(item));
@@ -256,6 +269,11 @@ namespace JToolbox.Core.Extensions
         public static void SetAsFirst<T>(this IList<T> @this, List<T> items)
         {
             @this.SetAsFirstByIndexes(@this.IndexesOf(items));
+        }
+
+        public static void SetAsFirstByIndex<T>(this IList<T> @this, int index)
+        {
+            @this.SetAsFirstByIndexes(new List<int> { index });
         }
 
         public static void SetAsFirstByIndexes<T>(this IList<T> @this, List<int> indexes)
@@ -278,11 +296,6 @@ namespace JToolbox.Core.Extensions
 
         #region SetAsLast
 
-        public static void SetAsLastByIndex<T>(this IList<T> @this, int index)
-        {
-            @this.SetAsLastByIndexes(new List<int> { index });
-        }
-
         public static void SetAsLast<T>(this IList<T> @this, T item)
         {
             @this.SetAsLastByIndex(@this.IndexOf(item));
@@ -291,6 +304,11 @@ namespace JToolbox.Core.Extensions
         public static void SetAsLast<T>(this IList<T> @this, List<T> items)
         {
             @this.SetAsLastByIndexes(@this.IndexesOf(items));
+        }
+
+        public static void SetAsLastByIndex<T>(this IList<T> @this, int index)
+        {
+            @this.SetAsLastByIndexes(new List<int> { index });
         }
 
         public static void SetAsLastByIndexes<T>(this IList<T> @this, List<int> indexes)
