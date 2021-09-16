@@ -2,6 +2,8 @@
 using JToolbox.Core.Extensions;
 using JToolbox.Desktop.Dialogs;
 using JToolbox.WPF.Core.Base;
+using QTableFootball.Storage;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -11,13 +13,16 @@ namespace QTableFootball.App.ViewModels
     public class MainViewModel : NotifyPropertyChanged
     {
         private readonly IDialogsService dialogs = new DialogsService();
+        private readonly LocalStorage localStorage = new LocalStorage();
         private string activePlayersHeader;
+        private List<PlayerViewModel> allPlayers = new List<PlayerViewModel>();
         private string playersHeader;
         private PlayerViewModel selectedPlayer;
         private string selectedPlayerName;
 
         public MainViewModel()
         {
+            LoadPlayers();
             UpdateHeaders();
         }
 
@@ -47,12 +52,16 @@ namespace QTableFootball.App.ViewModels
 
         public RelayCommand AddPlayerCommand => new RelayCommand(() =>
         {
-            if (CheckPlayerName(SelectedPlayerName))
+            if (CheckPlayerName(SelectedPlayerName, true))
             {
                 var newPlayer = new PlayerViewModel
                 {
                     Name = SelectedPlayerName
                 };
+
+                allPlayers.Add(newPlayer);
+                SavePlayers();
+
                 Players.Add(newPlayer);
                 Players.OrderBy(x => x.Name);
                 UpdateHeaders();
@@ -86,10 +95,12 @@ namespace QTableFootball.App.ViewModels
                 return;
             }
 
-            if (CheckPlayerName(SelectedPlayerName))
+            if (CheckPlayerName(SelectedPlayerName, false))
             {
                 SelectedPlayer.Name = SelectedPlayerName;
                 Players.OrderBy(x => x.Name);
+
+                SavePlayers();
             }
         });
 
@@ -106,7 +117,12 @@ namespace QTableFootball.App.ViewModels
             if (CheckSelectedPlayers(SelectedPlayers)
                 && dialogs.ShowYesNoQuestion("Do you want to remove selected players?"))
             {
-                SelectedPlayers.ForEach(x => Players.Remove(x));
+                SelectedPlayers.ForEach(x =>
+                {
+                    allPlayers.Remove(x);
+                    Players.Remove(x);
+                });
+                SavePlayers();
                 UpdateHeaders();
             }
         });
@@ -168,9 +184,9 @@ namespace QTableFootball.App.ViewModels
 
         public ObservableCollection<SquadViewModel> Squads { get; } = new ObservableCollection<SquadViewModel>();
 
-        private bool CheckPlayerName(string name)
+        private bool CheckPlayerName(string name, bool add)
         {
-            if (!ValidatePlayerName(name))
+            if (!ValidatePlayerName(name, add))
             {
                 dialogs.ShowError("Player name should be unique and contain minimum 3 characters");
                 return false;
@@ -189,10 +205,42 @@ namespace QTableFootball.App.ViewModels
             return true;
         }
 
+        private void LoadPlayers()
+        {
+            try
+            {
+                var loadedPlayers = localStorage.Load();
+                allPlayers.AddRange(loadedPlayers.Select(x => new PlayerViewModel
+                {
+                    Name = x
+                }));
+                Players.AddRange(allPlayers);
+            }
+            catch (Exception exc)
+            {
+                dialogs.ShowException(exc, "Exception occured during loading players");
+            }
+        }
+
         private void MovePlayer(PlayerViewModel player, ObservableCollection<PlayerViewModel> from, ObservableCollection<PlayerViewModel> to)
         {
             from.Remove(player);
             to.Add(player);
+        }
+
+        private void SavePlayers()
+        {
+            try
+            {
+                var players = allPlayers.Select(x => x.Name)
+                    .OrderBy(x => x)
+                    .ToList();
+                localStorage.Save(players);
+            }
+            catch (Exception exc)
+            {
+                dialogs.ShowException(exc, "Exception occured during saving players");
+            }
         }
 
         private void UpdateHeaders()
@@ -201,7 +249,7 @@ namespace QTableFootball.App.ViewModels
             ActivePlayersHeader = $"Active players - {ActivePlayers.Count}";
         }
 
-        private bool ValidatePlayerName(string name)
+        private bool ValidatePlayerName(string name, bool add)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -213,9 +261,8 @@ namespace QTableFootball.App.ViewModels
                 return false;
             }
 
-            var allNames = Players.Select(x => x.Name).ToList();
-            allNames.AddRange(ActivePlayers.Select(x => x.Name));
-            return allNames.Count(x => x == name) <= 1;
+            var allNames = allPlayers.Select(x => x.Name);
+            return allNames.Count(x => x == name) <= (add ? 0 : 1);
         }
     }
 }
