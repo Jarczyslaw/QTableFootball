@@ -14,8 +14,10 @@ namespace QTableFootball.App.ViewModels
     {
         private readonly IDialogsService dialogs = new DialogsService();
         private readonly LocalStorage localStorage = new LocalStorage();
+        private ObservableCollection<PlayerViewModel> activePlayers = new ObservableCollection<PlayerViewModel>();
         private string activePlayersHeader;
         private List<PlayerViewModel> allPlayers = new List<PlayerViewModel>();
+        private ObservableCollection<PlayerViewModel> players = new ObservableCollection<PlayerViewModel>();
         private string playersHeader;
         private PlayerViewModel selectedPlayer;
         private string selectedPlayerName;
@@ -29,20 +31,27 @@ namespace QTableFootball.App.ViewModels
         public RelayCommand ActivateAllPlayersCommand => new RelayCommand(() =>
         {
             var players = Players.ToList();
+            
             players.ForEach(x => MovePlayer(x, Players, ActivePlayers));
-            UpdateHeaders();
+            ActivePlayers.ForEach(x => x.IsSelected = true);
+            AfterCollectionsChanged();
         });
 
         public RelayCommand ActivatePlayersCommand => new RelayCommand(() =>
         {
             if (CheckSelectedPlayers(SelectedPlayers))
             {
+                ActivePlayers.ForEach(x => x.IsSelected = false);
                 SelectedPlayers.ForEach(x => MovePlayer(x, Players, ActivePlayers));
-                UpdateHeaders();
+                AfterCollectionsChanged();
             }
         });
 
-        public ObservableCollection<PlayerViewModel> ActivePlayers { get; } = new ObservableCollection<PlayerViewModel>();
+        public ObservableCollection<PlayerViewModel> ActivePlayers
+        {
+            get => activePlayers;
+            set => Set(ref activePlayers, value);
+        }
 
         public string ActivePlayersHeader
         {
@@ -63,8 +72,7 @@ namespace QTableFootball.App.ViewModels
                 SavePlayers();
 
                 Players.Add(newPlayer);
-                Players.OrderBy(x => x.Name);
-                UpdateHeaders();
+                AfterCollectionsChanged();
 
                 SelectedPlayer = newPlayer;
                 SelectedPlayerName = string.Empty;
@@ -75,15 +83,17 @@ namespace QTableFootball.App.ViewModels
         {
             var activePlayers = ActivePlayers.ToList();
             activePlayers.ForEach(x => MovePlayer(x, ActivePlayers, Players));
-            UpdateHeaders();
+            Players.ForEach(x => x.IsSelected = true);
+            AfterCollectionsChanged();
         });
 
         public RelayCommand DeactivatePlayersCommand => new RelayCommand(() =>
         {
             if (CheckSelectedPlayers(SelectedActivePlayers))
             {
+                Players.ForEach(x => x.IsSelected = false);
                 SelectedActivePlayers.ForEach(x => MovePlayer(x, ActivePlayers, Players));
-                UpdateHeaders();
+                AfterCollectionsChanged();
             }
         });
 
@@ -98,13 +108,17 @@ namespace QTableFootball.App.ViewModels
             if (CheckPlayerName(SelectedPlayerName, false))
             {
                 SelectedPlayer.Name = SelectedPlayerName;
-                Players.OrderBy(x => x.Name);
+                AfterCollectionsChanged();
 
                 SavePlayers();
             }
         });
 
-        public ObservableCollection<PlayerViewModel> Players { get; } = new ObservableCollection<PlayerViewModel>();
+        public ObservableCollection<PlayerViewModel> Players
+        {
+            get => players;
+            set => Set(ref players, value);
+        }
 
         public string PlayersHeader
         {
@@ -123,7 +137,7 @@ namespace QTableFootball.App.ViewModels
                     Players.Remove(x);
                 });
                 SavePlayers();
-                UpdateHeaders();
+                AfterCollectionsChanged();
             }
         });
 
@@ -184,6 +198,12 @@ namespace QTableFootball.App.ViewModels
 
         public ObservableCollection<SquadViewModel> Squads { get; } = new ObservableCollection<SquadViewModel>();
 
+        private void AfterCollectionsChanged()
+        {
+            SortCollections();
+            UpdateHeaders();
+        }
+
         private bool CheckPlayerName(string name, bool add)
         {
             if (!ValidatePlayerName(name, add))
@@ -209,11 +229,13 @@ namespace QTableFootball.App.ViewModels
         {
             try
             {
-                var loadedPlayers = localStorage.Load();
-                allPlayers.AddRange(loadedPlayers.Select(x => new PlayerViewModel
-                {
-                    Name = x
-                }));
+                var loadedPlayers = localStorage.Load()
+                    .Select(x => new PlayerViewModel
+                    {
+                        Name = x
+                    })
+                    .OrderBy(x => x.Name);
+                allPlayers.AddRange(loadedPlayers);
                 Players.AddRange(allPlayers);
             }
             catch (Exception exc)
@@ -241,6 +263,12 @@ namespace QTableFootball.App.ViewModels
             {
                 dialogs.ShowException(exc, "Exception occured during saving players");
             }
+        }
+
+        private void SortCollections()
+        {
+            ActivePlayers = new ObservableCollection<PlayerViewModel>(ActivePlayers.OrderBy(x => x.Name));
+            Players = new ObservableCollection<PlayerViewModel>(Players.OrderBy(x => x.Name));
         }
 
         private void UpdateHeaders()
