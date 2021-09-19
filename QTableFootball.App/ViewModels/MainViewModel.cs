@@ -12,11 +12,11 @@ namespace QTableFootball.App.ViewModels
 {
     public class MainViewModel : NotifyPropertyChanged
     {
+        private readonly List<PlayerViewModel> allPlayers = new List<PlayerViewModel>();
         private readonly IDialogsService dialogs = new DialogsService();
         private readonly LocalStorage localStorage = new LocalStorage();
         private ObservableCollection<PlayerViewModel> activePlayers = new ObservableCollection<PlayerViewModel>();
         private string activePlayersHeader;
-        private List<PlayerViewModel> allPlayers = new List<PlayerViewModel>();
         private ObservableCollection<PlayerViewModel> players = new ObservableCollection<PlayerViewModel>();
         private string playersHeader;
         private PlayerViewModel selectedPlayer;
@@ -31,7 +31,7 @@ namespace QTableFootball.App.ViewModels
         public RelayCommand ActivateAllPlayersCommand => new RelayCommand(() =>
         {
             var players = Players.ToList();
-            
+
             players.ForEach(x => MovePlayer(x, Players, ActivePlayers));
             ActivePlayers.ForEach(x => x.IsSelected = true);
             AfterCollectionsChanged();
