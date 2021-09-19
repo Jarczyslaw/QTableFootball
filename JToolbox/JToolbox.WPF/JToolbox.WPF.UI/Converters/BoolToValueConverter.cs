@@ -6,9 +6,6 @@ namespace JToolbox.WPF.UI.Converters
 {
     public class BoolToValueConverter<T> : IValueConverter
     {
-        public T FalseValue { get; set; }
-        public T TrueValue { get; set; }
-
         public BoolToValueConverter()
         {
         }
@@ -19,6 +16,9 @@ namespace JToolbox.WPF.UI.Converters
             TrueValue = trueValue;
         }
 
+        public T FalseValue { get; set; }
+        public T TrueValue { get; set; }
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null)
@@ -27,14 +27,14 @@ namespace JToolbox.WPF.UI.Converters
                 return Convert((bool)value);
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            return value != null ? value.Equals(TrueValue) : false;
-        }
-
         public T Convert(bool value)
         {
             return value ? TrueValue : FalseValue;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value != null ? value.Equals(TrueValue) : false;
         }
     }
 }

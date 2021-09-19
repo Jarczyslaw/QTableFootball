@@ -7,12 +7,22 @@ namespace JToolbox.Desktop.Core
     {
         private static readonly string runKey = "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run";
 
-        public static void SetStartup(string appName, string appPath)
+        public static bool CheckStartup(string appName, string appPath)
         {
-            using (var key = Registry.CurrentUser.OpenSubKey(runKey, true))
+            using (var key = Registry.CurrentUser.OpenSubKey(runKey, false))
             {
-                key.SetValue(appName, appPath);
+                return CheckValue(key, appName, appPath);
             }
+        }
+
+        public static bool CheckValue(RegistryKey registryKey, string valueName, object valueData)
+        {
+            var values = registryKey.GetValueNames();
+            if (values.Contains(valueName))
+            {
+                return Equals(registryKey.GetValue(valueName), valueData);
+            }
+            return false;
         }
 
         public static void ClearStartup(string appName)
@@ -20,14 +30,6 @@ namespace JToolbox.Desktop.Core
             using (var key = Registry.CurrentUser.OpenSubKey(runKey, true))
             {
                 DeleteValue(key, appName);
-            }
-        }
-
-        public static bool CheckStartup(string appName, string appPath)
-        {
-            using (var key = Registry.CurrentUser.OpenSubKey(runKey, false))
-            {
-                return CheckValue(key, appName, appPath);
             }
         }
 
@@ -40,14 +42,12 @@ namespace JToolbox.Desktop.Core
             }
         }
 
-        public static bool CheckValue(RegistryKey registryKey, string valueName, object valueData)
+        public static void SetStartup(string appName, string appPath)
         {
-            var values = registryKey.GetValueNames();
-            if (values.Contains(valueName))
+            using (var key = Registry.CurrentUser.OpenSubKey(runKey, true))
             {
-                return Equals(registryKey.GetValue(valueName), valueData);
+                key.SetValue(appName, appPath);
             }
-            return false;
         }
     }
 }

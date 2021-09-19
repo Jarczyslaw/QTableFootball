@@ -15,6 +15,24 @@ namespace JToolbox.Core.Results
             Messages = other.Messages;
         }
 
+        public Message Error => Errors.FirstOrDefault();
+
+        public List<Message> Errors => GetMessagesOfType(MessageType.Error);
+
+        public Message Information => Informations.FirstOrDefault();
+
+        public List<Message> Informations => GetMessagesOfType(MessageType.Information);
+
+        public bool IsError => !IsSuccess;
+
+        public bool IsSuccess => !Messages.Any(s => s.Type == MessageType.Error);
+
+        public Messages Messages { get; } = new Messages();
+
+        public Message Warning => Warnings.FirstOrDefault();
+
+        public List<Message> Warnings => GetMessagesOfType(MessageType.Warning);
+
         public static Result AsError(string error)
         {
             var result = new Result();
@@ -28,24 +46,6 @@ namespace JToolbox.Core.Results
             result.Messages.AddError(exc);
             return result;
         }
-
-        public Messages Messages { get; } = new Messages();
-
-        public bool IsSuccess => !Messages.Any(s => s.Type == MessageType.Error);
-
-        public bool IsError => !IsSuccess;
-
-        public List<Message> Informations => GetMessagesOfType(MessageType.Information);
-
-        public Message Information => Informations.FirstOrDefault();
-
-        public List<Message> Warnings => GetMessagesOfType(MessageType.Warning);
-
-        public Message Warning => Warnings.FirstOrDefault();
-
-        public List<Message> Errors => GetMessagesOfType(MessageType.Error);
-
-        public Message Error => Errors.FirstOrDefault();
 
         public virtual void Clear()
         {

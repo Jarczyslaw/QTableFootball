@@ -136,6 +136,11 @@ namespace JToolbox.Desktop.Dialogs
             }
         }
 
+        private string CreateFilter(List<FilterPair> filters)
+        {
+            return string.Join("|", filters.Select(s => s.ToString()));
+        }
+
         private string GetMessageFromException(Exception exception, string message)
         {
             var targetMessage = exception.Message;
@@ -146,13 +151,12 @@ namespace JToolbox.Desktop.Dialogs
             return targetMessage;
         }
 
-        private TaskDialog GetTaskDialog()
+        private VistaOpenFileDialog GetOpenFileDialog()
         {
-            return new TaskDialog
+            return new VistaOpenFileDialog
             {
-                EnableHyperlinks = true,
-                CenterParent = true,
-                ExpandFooterArea = true,
+                AddExtension = true,
+                RestoreDirectory = true,
             };
         }
 
@@ -172,32 +176,14 @@ namespace JToolbox.Desktop.Dialogs
             }
         }
 
-        private void ShowMessageTaskDialog(TaskDialogIcon icon, string title, string message, string details, IntPtr? owner)
+        private TaskDialog GetTaskDialog()
         {
-            using (var dialog = GetTaskDialog())
+            return new TaskDialog
             {
-                dialog.WindowTitle = title;
-                dialog.MainIcon = icon;
-                dialog.Content = message;
-                dialog.ExpandedInformation = details;
-                dialog.ExpandFooterArea = true;
-                dialog.Buttons.Add(new TaskDialogButton(ButtonType.Ok));
-                dialog.ShowDialog(GetOwnerHandle(owner));
-            }
-        }
-
-        private VistaOpenFileDialog GetOpenFileDialog()
-        {
-            return new VistaOpenFileDialog
-            {
-                AddExtension = true,
-                RestoreDirectory = true,
+                EnableHyperlinks = true,
+                CenterParent = true,
+                ExpandFooterArea = true,
             };
-        }
-
-        private string CreateFilter(List<FilterPair> filters)
-        {
-            return string.Join("|", filters.Select(s => s.ToString()));
         }
 
         private void SetOpenFileDialogOptions(string title, bool checkFileExists, string initialDirectory, List<FilterPair> filters, VistaOpenFileDialog dialog)
@@ -210,6 +196,20 @@ namespace JToolbox.Desktop.Dialogs
             dialog.CheckPathExists = checkFileExists;
             dialog.Filter = CreateFilter(filters);
             dialog.DefaultExt = filters.First().Extensions;
+        }
+
+        private void ShowMessageTaskDialog(TaskDialogIcon icon, string title, string message, string details, IntPtr? owner)
+        {
+            using (var dialog = GetTaskDialog())
+            {
+                dialog.WindowTitle = title;
+                dialog.MainIcon = icon;
+                dialog.Content = message;
+                dialog.ExpandedInformation = details;
+                dialog.ExpandFooterArea = true;
+                dialog.Buttons.Add(new TaskDialogButton(ButtonType.Ok));
+                dialog.ShowDialog(GetOwnerHandle(owner));
+            }
         }
     }
 }

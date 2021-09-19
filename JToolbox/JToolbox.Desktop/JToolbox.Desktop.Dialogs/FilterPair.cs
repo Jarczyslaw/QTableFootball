@@ -2,8 +2,8 @@
 {
     public class FilterPair
     {
-        public string Title { get; set; }
         public string Extensions { get; set; }
+        public string Title { get; set; }
 
         public override string ToString()
         {

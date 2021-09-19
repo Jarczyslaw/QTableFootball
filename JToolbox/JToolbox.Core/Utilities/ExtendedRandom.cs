@@ -42,8 +42,8 @@ namespace JToolbox.Core.Utilities
 
         public class GaussianValuesSource
         {
-            private double? nextValue;
             private readonly Random random;
+            private double? nextValue;
 
             public GaussianValuesSource(Random random)
             {

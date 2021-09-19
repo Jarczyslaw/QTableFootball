@@ -32,6 +32,13 @@ namespace JToolbox.WPF.UI.Controls
             set => SetValue(SelectedItemsExProperty, value);
         }
 
+        private static void SelectedItemsExChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+        {
+            var grid = dependencyObject as ExtendedDataGrid<T>;
+            var items = args.NewValue as IEnumerable;
+            grid.SelectedItemsExChanged(items);
+        }
+
         private void ExtendedDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             updateFromSelectionChanged = true;
@@ -48,13 +55,6 @@ namespace JToolbox.WPF.UI.Controls
                 }
                 SelectedItemsEx = items;
             }
-        }
-
-        private static void SelectedItemsExChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
-        {
-            var grid = dependencyObject as ExtendedDataGrid<T>;
-            var items = args.NewValue as IEnumerable;
-            grid.SelectedItemsExChanged(items);
         }
 
         private void SelectedItemsExChanged(IEnumerable items)

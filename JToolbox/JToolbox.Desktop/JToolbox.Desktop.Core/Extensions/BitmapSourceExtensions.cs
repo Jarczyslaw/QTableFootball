@@ -5,6 +5,12 @@ namespace JToolbox.Desktop.Core.Extensions
 {
     public static class BitmapSourceExtensions
     {
+        public static void ToBmp(this BitmapSource bitmapSource, string filePath)
+        {
+            var encoder = new BmpBitmapEncoder();
+            bitmapSource.ToFile(encoder, filePath);
+        }
+
         public static byte[] ToByteArray(this BitmapSource bitmapSource)
         {
             int width = bitmapSource.PixelWidth;
@@ -16,18 +22,6 @@ namespace JToolbox.Desktop.Core.Extensions
             return pixels;
         }
 
-        public static void ToBmp(this BitmapSource bitmapSource, string filePath)
-        {
-            var encoder = new BmpBitmapEncoder();
-            bitmapSource.ToFile(encoder, filePath);
-        }
-
-        public static void ToPng(this BitmapSource bitmapSource, string filePath)
-        {
-            var encoder = new PngBitmapEncoder();
-            bitmapSource.ToFile(encoder, filePath);
-        }
-
         public static void ToFile(this BitmapSource bitmapSource, BitmapEncoder encoder, string filePath)
         {
             BitmapFrame frame = BitmapFrame.Create(bitmapSource);
@@ -36,6 +30,12 @@ namespace JToolbox.Desktop.Core.Extensions
             {
                 encoder.Save(stream);
             }
+        }
+
+        public static void ToPng(this BitmapSource bitmapSource, string filePath)
+        {
+            var encoder = new PngBitmapEncoder();
+            bitmapSource.ToFile(encoder, filePath);
         }
     }
 }

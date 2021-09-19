@@ -7,8 +7,22 @@ namespace JToolbox.WPF.UI
 {
     public static class Utils
     {
+        public static FrameworkElement FindParentFrameworkElement(DependencyObject current)
+        {
+            do
+            {
+                if (typeof(FrameworkElement).IsAssignableFrom(current.GetType()))
+                {
+                    return (FrameworkElement)current;
+                }
+                current = VisualTreeHelper.GetParent(current);
+            }
+            while (current != null);
+            return null;
+        }
+
         public static T FindParentOfType<T>(DependencyObject current)
-            where T : DependencyObject
+                    where T : DependencyObject
         {
             return FindParentOfType(current, typeof(T)) as T;
         }
@@ -32,20 +46,6 @@ namespace JToolbox.WPF.UI
                 }
                 while (current != null);
             }
-            return null;
-        }
-
-        public static FrameworkElement FindParentFrameworkElement(DependencyObject current)
-        {
-            do
-            {
-                if (typeof(FrameworkElement).IsAssignableFrom(current.GetType()))
-                {
-                    return (FrameworkElement)current;
-                }
-                current = VisualTreeHelper.GetParent(current);
-            }
-            while (current != null);
             return null;
         }
     }

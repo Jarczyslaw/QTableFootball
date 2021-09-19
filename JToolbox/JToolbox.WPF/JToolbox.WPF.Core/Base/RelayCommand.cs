@@ -5,14 +5,9 @@ namespace JToolbox.WPF.Core.Base
 {
     public class RelayCommand : ICommand
     {
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
+        private readonly Func<bool> canExecute;
 
         private readonly Action execute;
-        private readonly Func<bool> canExecute;
 
         public RelayCommand(Action execute) : this(execute, null)
         {
@@ -22,6 +17,17 @@ namespace JToolbox.WPF.Core.Base
         {
             this.execute = execute;
             this.canExecute = canExecute;
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        public static void CanExecuteRefresh()
+        {
+            CommandManager.InvalidateRequerySuggested();
         }
 
         public bool CanExecute(object parameter)
@@ -35,11 +41,6 @@ namespace JToolbox.WPF.Core.Base
         public void Execute(object parameter)
         {
             execute();
-        }
-
-        public static void CanExecuteRefresh()
-        {
-            CommandManager.InvalidateRequerySuggested();
         }
     }
 }

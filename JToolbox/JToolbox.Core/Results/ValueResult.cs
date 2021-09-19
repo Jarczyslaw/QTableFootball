@@ -24,6 +24,8 @@ namespace JToolbox.Core.Results
             Value = value;
         }
 
+        public T Value { get; set; }
+
         public new static ValueResult<T> AsError(string error)
         {
             var result = new ValueResult<T>();
@@ -37,8 +39,6 @@ namespace JToolbox.Core.Results
             result.Messages.AddError(exc);
             return result;
         }
-
-        public T Value { get; set; }
 
         public override void Clear()
         {

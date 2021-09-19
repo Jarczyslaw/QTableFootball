@@ -12,16 +12,16 @@ namespace JToolbox.Desktop.Core.Services
 
         void OpenAppLocation();
 
+        void OpenFileLocation(string filePath);
+
         void OpenFolderLocation(string folderPath);
 
-        void OpenFileLocation(string filePath);
+        void Restart();
+
+        void Shutdown();
 
         void StartProcess(string process, string arguments = null);
 
         void StartProcessSilent(string process, string arguments = null);
-
-        void Shutdown();
-
-        void Restart();
     }
 }

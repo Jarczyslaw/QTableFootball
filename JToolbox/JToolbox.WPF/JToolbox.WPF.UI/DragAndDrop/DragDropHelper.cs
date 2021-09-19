@@ -14,10 +14,6 @@ namespace JToolbox.WPF.UI.DragAndDrop
     {
         private readonly List<DragDropPair> dragDropPairs;
 
-        public event OnDrag OnDrag;
-
-        public event OnDrop OnDrop;
-
         public DragDropHelper(FrameworkElement containerElement, DragDropPair dragDropPair)
             : this(containerElement, new List<DragDropPair> { dragDropPair })
         {
@@ -29,7 +25,43 @@ namespace JToolbox.WPF.UI.DragAndDrop
             this.dragDropPairs = dragDropPairs;
         }
 
+        public event OnDrag OnDrag;
+
+        public event OnDrop OnDrop;
+
         protected override string Key => nameof(DragDropHelper);
+
+        protected override void DragStart(object sender, MouseEventArgs e)
+        {
+            var source = (DependencyObject)e.OriginalSource;
+            var sourceTypes = dragDropPairs?.Select(s => s.SourceType).ToList();
+            if (Utils.FindParentOfTypes(source, sourceTypes) is FrameworkElement sourceParent)
+            {
+                var args = new UiDragDropArgs
+                {
+                    SourceElement = sourceParent,
+                    Source = sourceParent.DataContext
+                };
+                CallOnDragChain(args);
+                DragDrop.DoDragDrop(source, new DataObject(Key, args), DragDropEffects.Link);
+                startPosition = null;
+            }
+        }
+
+        protected override void DropStart(object sender, DragEventArgs e)
+        {
+            var args = e.Data.GetData(Key) as UiDragDropArgs;
+            var targetTypes = dragDropPairs?.Where(d => d.SourceType == args.SourceElement.GetType())
+                .Select(s => s.TargetType)
+                .ToList();
+            var target = (DependencyObject)e.OriginalSource;
+            if (Utils.FindParentOfTypes(target, targetTypes) is FrameworkElement targetParent && args.SourceElement != targetParent)
+            {
+                args.TargetElement = targetParent;
+                args.Target = targetParent.DataContext;
+                CallOnDropChain(args);
+            }
+        }
 
         private void CallOnDragChain(UiDragDropArgs args)
         {
@@ -76,38 +108,6 @@ namespace JToolbox.WPF.UI.DragAndDrop
             if (args.TargetElement != containerElement && containerElement.DataContext is IDragDropAware elementAware)
             {
                 elementAware.OnDrop(args);
-            }
-        }
-
-        protected override void DragStart(object sender, MouseEventArgs e)
-        {
-            var source = (DependencyObject)e.OriginalSource;
-            var sourceTypes = dragDropPairs?.Select(s => s.SourceType).ToList();
-            if (Utils.FindParentOfTypes(source, sourceTypes) is FrameworkElement sourceParent)
-            {
-                var args = new UiDragDropArgs
-                {
-                    SourceElement = sourceParent,
-                    Source = sourceParent.DataContext
-                };
-                CallOnDragChain(args);
-                DragDrop.DoDragDrop(source, new DataObject(Key, args), DragDropEffects.Link);
-                startPosition = null;
-            }
-        }
-
-        protected override void DropStart(object sender, DragEventArgs e)
-        {
-            var args = e.Data.GetData(Key) as UiDragDropArgs;
-            var targetTypes = dragDropPairs?.Where(d => d.SourceType == args.SourceElement.GetType())
-                .Select(s => s.TargetType)
-                .ToList();
-            var target = (DependencyObject)e.OriginalSource;
-            if (Utils.FindParentOfTypes(target, targetTypes) is FrameworkElement targetParent && args.SourceElement != targetParent)
-            {
-                args.TargetElement = targetParent;
-                args.Target = targetParent.DataContext;
-                CallOnDropChain(args);
             }
         }
     }

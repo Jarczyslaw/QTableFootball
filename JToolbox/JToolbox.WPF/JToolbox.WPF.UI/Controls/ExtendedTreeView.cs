@@ -19,13 +19,13 @@ namespace JToolbox.WPF.UI.Controls
             set => SetValue(SelectedItemExProperty, value);
         }
 
+        private static void SelectedItemsExChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+        {
+        }
+
         private void ExtendedTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             SelectedItemEx = (T)e.NewValue;
-        }
-
-        private static void SelectedItemsExChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
-        {
         }
     }
 }

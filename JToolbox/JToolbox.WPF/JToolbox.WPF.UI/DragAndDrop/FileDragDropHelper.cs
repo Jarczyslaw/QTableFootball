@@ -17,10 +17,6 @@ namespace JToolbox.WPF.UI.DragAndDrop
         private readonly List<Type> fileDragSources;
         private readonly List<Type> fileDropTargets;
 
-        public event OnFileDrag OnFileDrag;
-
-        public event OnFileDrop OnFileDrop;
-
         public FileDragDropHelper(FrameworkElement containerElement, Type fileDragSource, Type fileDropTarget)
             : this(containerElement, new List<Type> { fileDragSource }, new List<Type> { fileDropTarget })
         {
@@ -33,8 +29,57 @@ namespace JToolbox.WPF.UI.DragAndDrop
             this.fileDropTargets = fileDropTargets;
         }
 
-        protected override string Key => DataFormats.FileDrop;
+        public event OnFileDrag OnFileDrag;
+
+        public event OnFileDrop OnFileDrop;
+
         public string AdditionalKey => nameof(FileDragDropHelper);
+        protected override string Key => DataFormats.FileDrop;
+
+        protected override void DragStart(object sender, MouseEventArgs e)
+        {
+            var source = e.OriginalSource as DependencyObject;
+            if (Utils.FindParentOfTypes(source, fileDragSources) is FrameworkElement parent)
+            {
+                var args = new UiFileDragArgs
+                {
+                    Element = parent,
+                    Source = parent.DataContext
+                };
+                CallOnDragChain(args);
+                if (args.Files?.Count > 0)
+                {
+                    var dataObject = new DataObject(DataFormats.FileDrop, args.Files.ToArray());
+                    dataObject.SetData(AdditionalKey, new object());
+                    DragDrop.DoDragDrop(source, dataObject, DragDropEffects.Move);
+                    foreach (var file in args.Files)
+                    {
+                        if (File.Exists(file))
+                        {
+                            File.Delete(file);
+                        }
+                    }
+                    startPosition = null;
+                }
+            }
+        }
+
+        protected override void DropStart(object sender, DragEventArgs e)
+        {
+            var target = e.OriginalSource as DependencyObject;
+            var files = e.Data.GetData(DataFormats.FileDrop) as string[];
+            var fromHelper = e.Data.GetData(AdditionalKey) != null;
+            if (files?.Length > 0 && !fromHelper && Utils.FindParentOfTypes(target, fileDropTargets) is FrameworkElement parent)
+            {
+                var args = new UiFileDropArgs
+                {
+                    Files = files.ToList(),
+                    Element = parent,
+                    Target = parent.DataContext
+                };
+                CallOnDropChain(args);
+            }
+        }
 
         private void CallOnDragChain(UiFileDragArgs args)
         {
@@ -80,51 +125,6 @@ namespace JToolbox.WPF.UI.DragAndDrop
             if (args.Element != containerElement && containerElement.DataContext is IFileDragDropAware elementAware)
             {
                 elementAware.OnFilesDrop(args);
-            }
-        }
-
-        protected override void DragStart(object sender, MouseEventArgs e)
-        {
-            var source = e.OriginalSource as DependencyObject;
-            if (Utils.FindParentOfTypes(source, fileDragSources) is FrameworkElement parent)
-            {
-                var args = new UiFileDragArgs
-                {
-                    Element = parent,
-                    Source = parent.DataContext
-                };
-                CallOnDragChain(args);
-                if (args.Files?.Count > 0)
-                {
-                    var dataObject = new DataObject(DataFormats.FileDrop, args.Files.ToArray());
-                    dataObject.SetData(AdditionalKey, new object());
-                    DragDrop.DoDragDrop(source, dataObject, DragDropEffects.Move);
-                    foreach (var file in args.Files)
-                    {
-                        if (File.Exists(file))
-                        {
-                            File.Delete(file);
-                        }
-                    }
-                    startPosition = null;
-                }
-            }
-        }
-
-        protected override void DropStart(object sender, DragEventArgs e)
-        {
-            var target = e.OriginalSource as DependencyObject;
-            var files = e.Data.GetData(DataFormats.FileDrop) as string[];
-            var fromHelper = e.Data.GetData(AdditionalKey) != null;
-            if (files?.Length > 0 && !fromHelper && Utils.FindParentOfTypes(target, fileDropTargets) is FrameworkElement parent)
-            {
-                var args = new UiFileDropArgs
-                {
-                    Files = files.ToList(),
-                    Element = parent,
-                    Target = parent.DataContext
-                };
-                CallOnDropChain(args);
             }
         }
     }

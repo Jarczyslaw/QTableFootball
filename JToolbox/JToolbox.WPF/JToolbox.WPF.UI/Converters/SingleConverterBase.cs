@@ -10,13 +10,13 @@ namespace JToolbox.WPF.UI.Converters
     {
         private static T Instance;
 
+        public abstract object Convert(object value, Type targetType, object parameter, CultureInfo culture);
+
+        public abstract object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture);
+
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
             return Instance ?? (Instance = new T());
         }
-
-        public abstract object Convert(object value, Type targetType, object parameter, CultureInfo culture);
-
-        public abstract object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture);
     }
 }

@@ -7,14 +7,10 @@ namespace JToolbox.Core.Extensions
 {
     public static class AssemblyExtensions
     {
-        public static IEnumerable<Type> GetTypesSubclassOf<T>(this Assembly assembly)
+        public static IEnumerable<Type> GetTypes(this Assembly assembly, Predicate<Type> predicate)
         {
-            return assembly.GetTypesSubclassOf(typeof(T));
-        }
-
-        public static IEnumerable<Type> GetTypesSubclassOf(this Assembly assembly, Type type)
-        {
-            return assembly.GetTypes(t1 => t1.IsSubclassOf(type));
+            return assembly.GetTypes()
+                .Where(t => predicate(t));
         }
 
         public static IEnumerable<Type> GetTypesImplements<T>(this Assembly assembly)
@@ -27,10 +23,14 @@ namespace JToolbox.Core.Extensions
             return assembly.GetTypes(t1 => t1.GetInterfaces().Contains(type));
         }
 
-        public static IEnumerable<Type> GetTypes(this Assembly assembly, Predicate<Type> predicate)
+        public static IEnumerable<Type> GetTypesSubclassOf<T>(this Assembly assembly)
         {
-            return assembly.GetTypes()
-                .Where(t => predicate(t));
+            return assembly.GetTypesSubclassOf(typeof(T));
+        }
+
+        public static IEnumerable<Type> GetTypesSubclassOf(this Assembly assembly, Type type)
+        {
+            return assembly.GetTypes(t1 => t1.IsSubclassOf(type));
         }
     }
 }

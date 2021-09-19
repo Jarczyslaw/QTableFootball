@@ -7,18 +7,12 @@ namespace JToolbox.Core.Nodes
 {
     public abstract class NodesBase<T> : NotifyPropertyChanged
     {
-        protected readonly List<Node<T>> nodes = new List<Node<T>>();
         internal readonly NodeEqualityComparer<T> nodeEqualityComparer = new NodeEqualityComparer<T>();
-
+        protected readonly List<Node<T>> nodes = new List<Node<T>>();
+        public int AllNodesCount => GetAllNodes().Count;
         public ReadOnlyCollection<Node<T>> Nodes => new ReadOnlyCollection<Node<T>>(nodes);
 
         public int NodesCount => nodes.Count;
-
-        public int AllNodesCount => GetAllNodes().Count;
-
-        internal abstract Node<T> CreateNewNode(T tag);
-
-        internal abstract void AddNode(Node<T> node, bool raiseOnChanged);
 
         public Node<T> AddNewNode(T tag)
         {
@@ -60,20 +54,10 @@ namespace JToolbox.Core.Nodes
             OnNodesChanged();
         }
 
-        public List<Node<T>> GetAllNodes(List<Node<T>> result = null)
+        public Node<T> FindNode(Func<Node<T>, bool> predicate)
         {
-            result = result ?? new List<Node<T>>();
-            foreach (var node in nodes)
-            {
-                result.Add(node);
-                node.GetAllNodes(result);
-            }
-            return result;
-        }
-
-        public void ForEachNode(Action<Node<T>> action)
-        {
-            GetAllNodes().ForEach(action);
+            return FindNodes(predicate)
+                .FirstOrDefault();
         }
 
         public List<Node<T>> FindNodes(Func<Node<T>, bool> predicate)
@@ -83,10 +67,20 @@ namespace JToolbox.Core.Nodes
                 .ToList();
         }
 
-        public Node<T> FindNode(Func<Node<T>, bool> predicate)
+        public void ForEachNode(Action<Node<T>> action)
         {
-            return FindNodes(predicate)
-                .FirstOrDefault();
+            GetAllNodes().ForEach(action);
+        }
+
+        public List<Node<T>> GetAllNodes(List<Node<T>> result = null)
+        {
+            result = result ?? new List<Node<T>>();
+            foreach (var node in nodes)
+            {
+                result.Add(node);
+                node.GetAllNodes(result);
+            }
+            return result;
         }
 
         public void OnNodesChanged()
@@ -102,5 +96,9 @@ namespace JToolbox.Core.Nodes
                 node.OnRecursiveNodesChanged();
             }
         }
+
+        internal abstract void AddNode(Node<T> node, bool raiseOnChanged);
+
+        internal abstract Node<T> CreateNewNode(T tag);
     }
 }

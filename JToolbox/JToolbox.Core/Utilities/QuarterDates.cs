@@ -14,14 +14,14 @@ namespace JToolbox.Core.Utilities
             return (month + 2) / 3;
         }
 
-        public static DateTime QuarterStartDate(DateTime date)
+        public static int MonthInQuarter(int month)
         {
-            return QuarterStartDate(date.Year, GetQuarter(date));
+            return (month - 1) % 3 + 1;
         }
 
-        public static DateTime QuarterStartDate(int year, int quarter)
+        public static int MonthInQuarter(DateTime date)
         {
-            return new DateTime(year, quarter * 3 - 2, 1);
+            return MonthInQuarter(date.Month);
         }
 
         public static DateTime QuarterEndDate(DateTime date)
@@ -37,14 +37,14 @@ namespace JToolbox.Core.Utilities
                 .AddMilliseconds(-1);
         }
 
-        public static int MonthInQuarter(int month)
+        public static DateTime QuarterStartDate(DateTime date)
         {
-            return (month - 1) % 3 + 1;
+            return QuarterStartDate(date.Year, GetQuarter(date));
         }
 
-        public static int MonthInQuarter(DateTime date)
+        public static DateTime QuarterStartDate(int year, int quarter)
         {
-            return MonthInQuarter(date.Month);
+            return new DateTime(year, quarter * 3 - 2, 1);
         }
     }
 }

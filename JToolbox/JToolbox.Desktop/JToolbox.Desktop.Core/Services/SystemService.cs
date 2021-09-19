@@ -35,15 +35,25 @@ namespace JToolbox.Desktop.Core.Services
             OpenFolderLocation(appLocation);
         }
 
+        public void OpenFileLocation(string filePath)
+        {
+            var argument = "/select, \"" + filePath + "\"";
+            StartProcess("explorer.exe", argument);
+        }
+
         public void OpenFolderLocation(string folderPath)
         {
             StartProcess(folderPath);
         }
 
-        public void OpenFileLocation(string filePath)
+        public void Restart()
         {
-            var argument = "/select, \"" + filePath + "\"";
-            StartProcess("explorer.exe", argument);
+            StartProcessSilent("shutdown", "-r -t 0");
+        }
+
+        public void Shutdown()
+        {
+            StartProcessSilent("shutdown", "-s -t 0");
         }
 
         public void StartProcess(string process, string arguments = null)
@@ -59,16 +69,6 @@ namespace JToolbox.Desktop.Core.Services
                 UseShellExecute = false
             };
             Process.Start(processStart);
-        }
-
-        public void Shutdown()
-        {
-            StartProcessSilent("shutdown", "-s -t 0");
-        }
-
-        public void Restart()
-        {
-            StartProcessSilent("shutdown", "-r -t 0");
         }
     }
 }

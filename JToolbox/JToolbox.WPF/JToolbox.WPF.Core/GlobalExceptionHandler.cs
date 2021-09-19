@@ -6,6 +6,8 @@ namespace JToolbox.WPF.Core
 {
     public abstract class GlobalExceptionHandler
     {
+        public abstract bool HandleException(string source, Exception exception);
+
         public void Register()
         {
             AppDomain.CurrentDomain.UnhandledException +=
@@ -15,7 +17,5 @@ namespace JToolbox.WPF.Core
             TaskScheduler.UnobservedTaskException +=
                 (s, e) => HandleException(nameof(TaskScheduler.UnobservedTaskException), e.Exception);
         }
-
-        public abstract bool HandleException(string source, Exception exception);
     }
 }

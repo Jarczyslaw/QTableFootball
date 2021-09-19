@@ -13,10 +13,10 @@ namespace JToolbox.WPF.UI
             Window = window;
         }
 
-        public WindowBase Window { get; }
-        public bool WindowRendered { get; private set; }
-        public bool WindowInitialized { get; private set; }
         private object DataContext => Window.DataContext;
+        public WindowBase Window { get; }
+        public bool WindowInitialized { get; private set; }
+        public bool WindowRendered { get; private set; }
 
         public void Attach()
         {
@@ -72,24 +72,17 @@ namespace JToolbox.WPF.UI
 
         #region Window events
 
-        private void Window_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            SetupSourceEvents(e.OldValue, false);
-            SetupSourceEvents(e.NewValue, true);
-        }
-
         private void Window_Closed(object sender, EventArgs e)
         {
             (DataContext as IOnClosedAware)?.OnClosed();
             SetupSourceEvents(DataContext, false);
         }
 
-        private void Window_Initialized(object sender, EventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (!WindowInitialized)
+            if (DataContext is IOnClosingAware closingAware)
             {
-                (DataContext as IOnInitializedAware)?.OnInitialized();
-                WindowInitialized = true;
+                e.Cancel = closingAware.OnClosing();
             }
         }
 
@@ -102,19 +95,18 @@ namespace JToolbox.WPF.UI
             }
         }
 
-        private void Window_Closing(object sender, CancelEventArgs e)
+        private void Window_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (DataContext is IOnClosingAware closingAware)
-            {
-                e.Cancel = closingAware.OnClosing();
-            }
+            SetupSourceEvents(e.OldValue, false);
+            SetupSourceEvents(e.NewValue, true);
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void Window_Initialized(object sender, EventArgs e)
         {
-            if (DataContext is IOnLoadedAware loadedAware)
+            if (!WindowInitialized)
             {
-                loadedAware.OnLoaded();
+                (DataContext as IOnInitializedAware)?.OnInitialized();
+                WindowInitialized = true;
             }
         }
 
@@ -123,6 +115,14 @@ namespace JToolbox.WPF.UI
             if (DataContext is IOnKeyDownAware keyDownAware)
             {
                 keyDownAware.OnKeyDown(e);
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is IOnLoadedAware loadedAware)
+            {
+                loadedAware.OnLoaded();
             }
         }
 

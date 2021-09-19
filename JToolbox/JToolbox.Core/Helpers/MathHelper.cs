@@ -4,14 +4,19 @@ namespace JToolbox.Core.Helpers
 {
     public static class MathHelper
     {
-        public static byte RoundToByte(double value)
+        public static bool AreEqual(double val1, double val2, double tolerance = 0.001d)
         {
-            return ByteClamp(Math.Round(value));
+            return Math.Abs(val1 - val2) < tolerance;
         }
 
-        public static int RoundToInt(double value)
+        public static byte ByteClamp(int value)
         {
-            return (int)Math.Round(value);
+            return (byte)Clamp(value, byte.MinValue, byte.MaxValue);
+        }
+
+        public static byte ByteClamp(double value)
+        {
+            return (byte)Clamp(value, byte.MinValue, byte.MaxValue);
         }
 
         public static byte CeilToByte(double value)
@@ -22,6 +27,29 @@ namespace JToolbox.Core.Helpers
         public static int CeilToInt(double value)
         {
             return (int)Math.Ceiling(value);
+        }
+
+        public static int Clamp(int value, int min, int max)
+        {
+            if (value > max)
+                return max;
+            if (value < min)
+                return min;
+            return value;
+        }
+
+        public static double Clamp(double value, double min, double max)
+        {
+            if (value > max)
+                return max;
+            if (value < min)
+                return min;
+            return value;
+        }
+
+        public static double DegToRad(double deg)
+        {
+            return deg * Math.PI / 180d;
         }
 
         public static byte FloorToByte(double value)
@@ -54,49 +82,19 @@ namespace JToolbox.Core.Helpers
             return Math.Min(val1, Math.Min(val2, val3));
         }
 
-        public static int Clamp(int value, int min, int max)
+        public static byte Negative(byte value)
         {
-            if (value > max)
-                return max;
-            if (value < min)
-                return min;
-            return value;
+            return (byte)(byte.MaxValue - value);
         }
 
-        public static double Clamp(double value, double min, double max)
+        public static double Normalize(double value, double max)
         {
-            if (value > max)
-                return max;
-            if (value < min)
-                return min;
-            return value;
+            return byte.MaxValue * value / max;
         }
 
-        public static byte ByteClamp(int value)
+        public static double NormalizeLog10(double value, double max)
         {
-            return (byte)Clamp(value, byte.MinValue, byte.MaxValue);
-        }
-
-        public static byte ByteClamp(double value)
-        {
-            return (byte)Clamp(value, byte.MinValue, byte.MaxValue);
-        }
-
-        public static double DegToRad(double deg)
-        {
-            return deg * Math.PI / 180d;
-        }
-
-        public static double RadToDeg(double rad)
-        {
-            return rad * 180d / Math.PI;
-        }
-
-        public static void Swap<T>(ref T left, ref T right)
-        {
-            T temp = left;
-            left = right;
-            right = temp;
+            return byte.MaxValue * Math.Log10(1d + value) / Math.Log10(1d + max);
         }
 
         public static void Orientate(ref byte val1, ref byte val2)
@@ -117,9 +115,9 @@ namespace JToolbox.Core.Helpers
                 Swap(ref val1, ref val2);
         }
 
-        public static bool AreEqual(double val1, double val2, double tolerance = 0.001d)
+        public static double RadToDeg(double rad)
         {
-            return Math.Abs(val1 - val2) < tolerance;
+            return rad * 180d / Math.PI;
         }
 
         public static double Rescale(double x, double a1, double a2, double b1, double b2)
@@ -127,19 +125,21 @@ namespace JToolbox.Core.Helpers
             return (b2 - b1) / (a2 - a1) * (x - a1) + b1;
         }
 
-        public static double Normalize(double value, double max)
+        public static byte RoundToByte(double value)
         {
-            return byte.MaxValue * value / max;
+            return ByteClamp(Math.Round(value));
         }
 
-        public static double NormalizeLog10(double value, double max)
+        public static int RoundToInt(double value)
         {
-            return byte.MaxValue * Math.Log10(1d + value) / Math.Log10(1d + max);
+            return (int)Math.Round(value);
         }
 
-        public static byte Negative(byte value)
+        public static void Swap<T>(ref T left, ref T right)
         {
-            return (byte)(byte.MaxValue - value);
+            T temp = left;
+            left = right;
+            right = temp;
         }
     }
 }

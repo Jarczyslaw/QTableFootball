@@ -35,20 +35,16 @@ namespace JToolbox.WPF.UI.DragAndDrop
             containerElement.Drop -= Drop;
         }
 
-        private void PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        protected bool CheckMinimumDistance(Point position)
         {
-            startPosition = e.GetPosition(null);
-        }
-
-        protected virtual void MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed && CheckMinimumDistance(e.GetPosition(null)))
+            if (startPosition != null)
             {
-                DragStart(sender, e);
+                var diff = startPosition.Value - position;
+                return Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance
+                    || Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance;
             }
+            return false;
         }
-
-        protected abstract void DragStart(object sender, MouseEventArgs e);
 
         protected virtual void DragEnter(object sender, DragEventArgs e)
         {
@@ -58,6 +54,8 @@ namespace JToolbox.WPF.UI.DragAndDrop
                 e.Handled = true;
             }
         }
+
+        protected abstract void DragStart(object sender, MouseEventArgs e);
 
         protected virtual void Drop(object sender, DragEventArgs e)
         {
@@ -69,15 +67,17 @@ namespace JToolbox.WPF.UI.DragAndDrop
 
         protected abstract void DropStart(object sender, DragEventArgs e);
 
-        protected bool CheckMinimumDistance(Point position)
+        protected virtual void MouseMove(object sender, MouseEventArgs e)
         {
-            if (startPosition != null)
+            if (e.LeftButton == MouseButtonState.Pressed && CheckMinimumDistance(e.GetPosition(null)))
             {
-                var diff = startPosition.Value - position;
-                return Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance
-                    || Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance;
+                DragStart(sender, e);
             }
-            return false;
+        }
+
+        private void PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            startPosition = e.GetPosition(null);
         }
     }
 }

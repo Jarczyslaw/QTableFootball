@@ -10,33 +10,6 @@ namespace JToolbox.Core.Utilities
 {
     public static class NetworkUtils
     {
-        public static List<IPAddress> GetLocalIPAddresses()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            return host.AddressList.Where(a => a.AddressFamily == AddressFamily.InterNetwork)
-                .ToList();
-        }
-
-        public static IPAddress GetSubnetMask(IPAddress address)
-        {
-            foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                foreach (var unicastAddresses in adapter.GetIPProperties().UnicastAddresses)
-                {
-                    if (unicastAddresses.Address.AddressFamily == AddressFamily.InterNetwork && unicastAddresses.Address.ToString() == address.ToString())
-                    {
-                        return unicastAddresses.IPv4Mask;
-                    }
-                }
-            }
-            return null;
-        }
-
-        public static bool ConnectedToLocalNetwork()
-        {
-            return NetworkInterface.GetIsNetworkAvailable();
-        }
-
         public static bool ConnectedToInternet()
         {
             try
@@ -51,68 +24,9 @@ namespace JToolbox.Core.Utilities
             }
         }
 
-        public static List<IPAddress> GetGatewayAddresses()
+        public static bool ConnectedToLocalNetwork()
         {
-            return NetworkInterface.GetAllNetworkInterfaces()
-                .Where(n => n.OperationalStatus == OperationalStatus.Up && n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
-                .SelectMany(n => n.GetIPProperties()?.GatewayAddresses)
-                .Select(g => g?.Address)
-                .Where(a => a?.AddressFamily == AddressFamily.InterNetwork && Array.FindIndex(a.GetAddressBytes(), b => b != 0) >= 0)
-                .ToList();
-        }
-
-        public static string GetHostName(IPAddress ipAddress)
-        {
-            try
-            {
-                return Dns.GetHostEntry(ipAddress)?.HostName;
-            }
-            catch (SocketException)
-            {
-                return null;
-            }
-        }
-
-        public static IPAddress GetBroadcastAddress(IPAddress address, IPAddress mask)
-        {
-            var ipAddress = BitConverter.ToUInt32(address.GetAddressBytes(), 0);
-            var ipMaskV4 = BitConverter.ToUInt32(mask.GetAddressBytes(), 0);
-            var broadCastIpAddress = ipAddress | ~ipMaskV4;
-            return new IPAddress(BitConverter.GetBytes(broadCastIpAddress));
-        }
-
-        public static IPAddress GetNetworkAddress(IPAddress address, IPAddress mask)
-        {
-            var ipAddress = BitConverter.ToUInt32(address.GetAddressBytes(), 0);
-            var ipMaskV4 = BitConverter.ToUInt32(mask.GetAddressBytes(), 0);
-            var networkIpAddress = ipAddress & ipMaskV4;
-            return new IPAddress(BitConverter.GetBytes(networkIpAddress));
-        }
-
-        public static void RemoveBroadcastNetworkAddresses(List<IPAddress> addresses, IPAddress mask)
-        {
-            for (int i = addresses.Count - 1; i >= 0; i--)
-            {
-                var address = addresses[i];
-                if (address == GetBroadcastAddress(address, mask) || address == GetNetworkAddress(address, mask))
-                {
-                    addresses.Remove(address);
-                }
-            }
-        }
-
-        public static List<IPAddress> GetAddressesInNetwork(IPAddress address, IPAddress mask)
-        {
-            var start = GetNetworkAddress(address, mask).Add(1);
-            var end = GetBroadcastAddress(address, mask).Add(-1);
-            return GetContinousAddressesInRange(start, end);
-        }
-
-        public static bool IsInSameSubnet(IPAddress address1, IPAddress address2, IPAddress subnetMask)
-        {
-            IPAddress network1 = GetNetworkAddress(address1, subnetMask);
-            IPAddress network2 = GetNetworkAddress(address2, subnetMask);
-            return network1.Equals(network2);
+            return NetworkInterface.GetIsNetworkAvailable();
         }
 
         public static IPAddress FirstAddressInSubnet(IPAddress address, IPAddress subnetMask)
@@ -122,11 +36,21 @@ namespace JToolbox.Core.Utilities
             return new IPAddress(new byte[] { addressBytes[0], addressBytes[1], addressBytes[2], (byte)(addressBytes[3] + 1) });
         }
 
-        public static IPAddress LastAddressInSubnet(IPAddress address, IPAddress subnetMask)
+        public static List<int> GetActiveTcpConnections()
         {
-            var networkAddress = GetBroadcastAddress(address, subnetMask);
-            var addressBytes = networkAddress.GetAddressBytes();
-            return new IPAddress(new byte[] { addressBytes[0], addressBytes[1], addressBytes[2], (byte)(addressBytes[3] - 1) });
+            var properties = IPGlobalProperties.GetIPGlobalProperties();
+            return properties.GetActiveTcpConnections()
+                .Select(c => c.LocalEndPoint.Port)
+                .Distinct()
+                .OrderBy(c => c)
+                .ToList();
+        }
+
+        public static List<IPAddress> GetAddressesInNetwork(IPAddress address, IPAddress mask)
+        {
+            var start = GetNetworkAddress(address, mask).Add(1);
+            var end = GetBroadcastAddress(address, mask).Add(-1);
+            return GetContinousAddressesInRange(start, end);
         }
 
         public static List<IPAddress> GetAddressesInRange(IPAddress startAddress, IPAddress endAddress)
@@ -168,6 +92,14 @@ namespace JToolbox.Core.Utilities
             return ips;
         }
 
+        public static IPAddress GetBroadcastAddress(IPAddress address, IPAddress mask)
+        {
+            var ipAddress = BitConverter.ToUInt32(address.GetAddressBytes(), 0);
+            var ipMaskV4 = BitConverter.ToUInt32(mask.GetAddressBytes(), 0);
+            var broadCastIpAddress = ipAddress | ~ipMaskV4;
+            return new IPAddress(BitConverter.GetBytes(broadCastIpAddress));
+        }
+
         public static List<IPAddress> GetContinousAddressesInRange(IPAddress startAddress, IPAddress endAddress)
         {
             var result = new List<IPAddress>();
@@ -192,20 +124,41 @@ namespace JToolbox.Core.Utilities
             return result;
         }
 
-        public static bool IsInRange(IPAddress address, IPAddress startAddress, IPAddress endAddress)
+        public static List<IPAddress> GetGatewayAddresses()
         {
-            return address.Compare(startAddress) >= 0
-                && address.Compare(endAddress) <= 0;
+            return NetworkInterface.GetAllNetworkInterfaces()
+                .Where(n => n.OperationalStatus == OperationalStatus.Up && n.NetworkInterfaceType != NetworkInterfaceType.Loopback)
+                .SelectMany(n => n.GetIPProperties()?.GatewayAddresses)
+                .Select(g => g?.Address)
+                .Where(a => a?.AddressFamily == AddressFamily.InterNetwork && Array.FindIndex(a.GetAddressBytes(), b => b != 0) >= 0)
+                .ToList();
         }
 
-        public static List<int> GetActiveTcpConnections()
+        public static string GetHostName(IPAddress ipAddress)
         {
-            var properties = IPGlobalProperties.GetIPGlobalProperties();
-            return properties.GetActiveTcpConnections()
-                .Select(c => c.LocalEndPoint.Port)
-                .Distinct()
-                .OrderBy(c => c)
+            try
+            {
+                return Dns.GetHostEntry(ipAddress)?.HostName;
+            }
+            catch (SocketException)
+            {
+                return null;
+            }
+        }
+
+        public static List<IPAddress> GetLocalIPAddresses()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            return host.AddressList.Where(a => a.AddressFamily == AddressFamily.InterNetwork)
                 .ToList();
+        }
+
+        public static IPAddress GetNetworkAddress(IPAddress address, IPAddress mask)
+        {
+            var ipAddress = BitConverter.ToUInt32(address.GetAddressBytes(), 0);
+            var ipMaskV4 = BitConverter.ToUInt32(mask.GetAddressBytes(), 0);
+            var networkIpAddress = ipAddress & ipMaskV4;
+            return new IPAddress(BitConverter.GetBytes(networkIpAddress));
         }
 
         public static List<int> GetOpenTcpPorts()
@@ -226,6 +179,53 @@ namespace JToolbox.Core.Utilities
                 .Distinct()
                 .OrderBy(c => c)
                 .ToList();
+        }
+
+        public static IPAddress GetSubnetMask(IPAddress address)
+        {
+            foreach (var adapter in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                foreach (var unicastAddresses in adapter.GetIPProperties().UnicastAddresses)
+                {
+                    if (unicastAddresses.Address.AddressFamily == AddressFamily.InterNetwork && unicastAddresses.Address.ToString() == address.ToString())
+                    {
+                        return unicastAddresses.IPv4Mask;
+                    }
+                }
+            }
+            return null;
+        }
+
+        public static bool IsInRange(IPAddress address, IPAddress startAddress, IPAddress endAddress)
+        {
+            return address.Compare(startAddress) >= 0
+                && address.Compare(endAddress) <= 0;
+        }
+
+        public static bool IsInSameSubnet(IPAddress address1, IPAddress address2, IPAddress subnetMask)
+        {
+            IPAddress network1 = GetNetworkAddress(address1, subnetMask);
+            IPAddress network2 = GetNetworkAddress(address2, subnetMask);
+            return network1.Equals(network2);
+        }
+
+        public static IPAddress LastAddressInSubnet(IPAddress address, IPAddress subnetMask)
+        {
+            var networkAddress = GetBroadcastAddress(address, subnetMask);
+            var addressBytes = networkAddress.GetAddressBytes();
+            return new IPAddress(new byte[] { addressBytes[0], addressBytes[1], addressBytes[2], (byte)(addressBytes[3] - 1) });
+        }
+
+        public static void RemoveBroadcastNetworkAddresses(List<IPAddress> addresses, IPAddress mask)
+        {
+            for (int i = addresses.Count - 1; i >= 0; i--)
+            {
+                var address = addresses[i];
+                if (address == GetBroadcastAddress(address, mask) || address == GetNetworkAddress(address, mask))
+                {
+                    addresses.Remove(address);
+                }
+            }
         }
     }
 }

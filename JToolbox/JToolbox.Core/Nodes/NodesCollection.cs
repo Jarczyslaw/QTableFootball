@@ -6,34 +6,16 @@ namespace JToolbox.Core.Nodes
 {
     public class NodesCollection<T> : NodesBase<T>
     {
-        internal override void AddNode(Node<T> node, bool raiseOnChanged)
+        public bool CompareTo(NodesCollection<T> other)
         {
-            if (!nodes.Contains(node))
+            if (NodesCount != other.NodesCount)
             {
-                node.Parent?.RemoveNode(node);
-                nodes.Add(node);
-
-                if (raiseOnChanged)
-                {
-                    OnNodesChanged();
-                }
-            }
-        }
-
-        public void RemoveNode(Node<T> node)
-        {
-            if (nodes.Remove(node))
-            {
-                OnNodesChanged();
-                return;
+                return false;
             }
 
-            node.Parent?.RemoveNode(node);
-        }
-
-        internal override Node<T> CreateNewNode(T tag)
-        {
-            return new Node<T>(this, null, tag);
+            var allNodes = GetAllNodes();
+            var otherAllNodes = other.GetAllNodes();
+            return Enumerable.SequenceEqual(allNodes, otherAllNodes, nodeEqualityComparer);
         }
 
         public void Map<TItem>(IEnumerable<TItem> items, Func<TItem, IEnumerable<TItem>> childrenSelector, Func<TItem, T> tagSelector)
@@ -87,16 +69,34 @@ namespace JToolbox.Core.Nodes
             OnRecursiveNodesChanged();
         }
 
-        public bool CompareTo(NodesCollection<T> other)
+        public void RemoveNode(Node<T> node)
         {
-            if (NodesCount != other.NodesCount)
+            if (nodes.Remove(node))
             {
-                return false;
+                OnNodesChanged();
+                return;
             }
 
-            var allNodes = GetAllNodes();
-            var otherAllNodes = other.GetAllNodes();
-            return Enumerable.SequenceEqual(allNodes, otherAllNodes, nodeEqualityComparer);
+            node.Parent?.RemoveNode(node);
+        }
+
+        internal override void AddNode(Node<T> node, bool raiseOnChanged)
+        {
+            if (!nodes.Contains(node))
+            {
+                node.Parent?.RemoveNode(node);
+                nodes.Add(node);
+
+                if (raiseOnChanged)
+                {
+                    OnNodesChanged();
+                }
+            }
+        }
+
+        internal override Node<T> CreateNewNode(T tag)
+        {
+            return new Node<T>(this, null, tag);
         }
     }
 }
