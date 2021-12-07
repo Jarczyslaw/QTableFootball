@@ -29,23 +29,23 @@ namespace QTableFootball.App.ViewModels
         }
 
         public RelayCommand ActivateAllPlayersCommand => new RelayCommand(() =>
-        {
-            var players = Players.ToList();
+            {
+                var players = Players.ToList();
 
-            players.ForEach(x => MovePlayer(x, Players, ActivePlayers));
-            ActivePlayers.ForEach(x => x.IsSelected = true);
-            AfterCollectionsChanged();
-        });
+                players.ForEach(x => MovePlayer(x, Players, ActivePlayers));
+                ActivePlayers.ForEach(x => x.IsSelected = true);
+                AfterCollectionsChanged();
+            });
 
         public RelayCommand ActivatePlayersCommand => new RelayCommand(() =>
-        {
-            if (CheckSelectedPlayers(SelectedPlayers))
             {
-                ActivePlayers.ForEach(x => x.IsSelected = false);
-                SelectedPlayers.ForEach(x => MovePlayer(x, Players, ActivePlayers));
-                AfterCollectionsChanged();
-            }
-        });
+                if (CheckSelectedPlayers(SelectedPlayers))
+                {
+                    ActivePlayers.ForEach(x => x.IsSelected = false);
+                    SelectedPlayers.ForEach(x => MovePlayer(x, Players, ActivePlayers));
+                    AfterCollectionsChanged();
+                }
+            });
 
         public ObservableCollection<PlayerViewModel> ActivePlayers
         {
@@ -60,59 +60,59 @@ namespace QTableFootball.App.ViewModels
         }
 
         public RelayCommand AddPlayerCommand => new RelayCommand(() =>
-        {
-            if (CheckPlayerName(SelectedPlayerName, true))
             {
-                var newPlayer = new PlayerViewModel
+                if (CheckPlayerName(SelectedPlayerName, true))
                 {
-                    Name = SelectedPlayerName
-                };
+                    var newPlayer = new PlayerViewModel
+                    {
+                        Name = SelectedPlayerName
+                    };
 
-                allPlayers.Add(newPlayer);
-                SavePlayers();
+                    allPlayers.Add(newPlayer);
+                    SavePlayers();
 
-                Players.Add(newPlayer);
-                AfterCollectionsChanged();
+                    Players.Add(newPlayer);
+                    AfterCollectionsChanged();
 
-                SelectedPlayer = newPlayer;
-                SelectedPlayerName = string.Empty;
-            }
-        });
+                    SelectedPlayer = newPlayer;
+                    SelectedPlayerName = string.Empty;
+                }
+            });
 
         public RelayCommand DeactivateAllPlayersCommand => new RelayCommand(() =>
-        {
-            var activePlayers = ActivePlayers.ToList();
-            activePlayers.ForEach(x => MovePlayer(x, ActivePlayers, Players));
-            Players.ForEach(x => x.IsSelected = true);
-            AfterCollectionsChanged();
-        });
+            {
+                var activePlayers = ActivePlayers.ToList();
+                activePlayers.ForEach(x => MovePlayer(x, ActivePlayers, Players));
+                Players.ForEach(x => x.IsSelected = true);
+                AfterCollectionsChanged();
+            });
 
         public RelayCommand DeactivatePlayersCommand => new RelayCommand(() =>
-        {
-            if (CheckSelectedPlayers(SelectedActivePlayers))
             {
-                Players.ForEach(x => x.IsSelected = false);
-                SelectedActivePlayers.ForEach(x => MovePlayer(x, ActivePlayers, Players));
-                AfterCollectionsChanged();
-            }
-        });
+                if (CheckSelectedPlayers(SelectedActivePlayers))
+                {
+                    Players.ForEach(x => x.IsSelected = false);
+                    SelectedActivePlayers.ForEach(x => MovePlayer(x, ActivePlayers, Players));
+                    AfterCollectionsChanged();
+                }
+            });
 
         public RelayCommand EditPlayerCommand => new RelayCommand(() =>
-        {
-            if (SelectedPlayer == null)
             {
-                dialogs.ShowError("No player selected");
-                return;
-            }
+                if (SelectedPlayer == null)
+                {
+                    dialogs.ShowError("No player selected");
+                    return;
+                }
 
-            if (CheckPlayerName(SelectedPlayerName, false))
-            {
-                SelectedPlayer.Name = SelectedPlayerName;
-                AfterCollectionsChanged();
+                if (CheckPlayerName(SelectedPlayerName, false))
+                {
+                    SelectedPlayer.Name = SelectedPlayerName;
+                    AfterCollectionsChanged();
 
-                SavePlayers();
-            }
-        });
+                    SavePlayers();
+                }
+            });
 
         public ObservableCollection<PlayerViewModel> Players
         {
@@ -127,19 +127,19 @@ namespace QTableFootball.App.ViewModels
         }
 
         public RelayCommand RemovePlayersCommand => new RelayCommand(() =>
-        {
-            if (CheckSelectedPlayers(SelectedPlayers)
-                && dialogs.ShowYesNoQuestion("Do you want to remove selected players?"))
             {
-                SelectedPlayers.ForEach(x =>
+                if (CheckSelectedPlayers(SelectedPlayers)
+                    && dialogs.ShowYesNoQuestion("Do you want to remove selected players?"))
                 {
-                    allPlayers.Remove(x);
-                    Players.Remove(x);
-                });
-                SavePlayers();
-                AfterCollectionsChanged();
-            }
-        });
+                    SelectedPlayers.ForEach(x =>
+                    {
+                        allPlayers.Remove(x);
+                        Players.Remove(x);
+                    });
+                    SavePlayers();
+                    AfterCollectionsChanged();
+                }
+            });
 
         public List<PlayerViewModel> SelectedActivePlayers => ActivePlayers.Where(x => x.IsSelected)
             .ToList();
@@ -164,37 +164,37 @@ namespace QTableFootball.App.ViewModels
             .ToList();
 
         public RelayCommand ShuffleCommand => new RelayCommand(() =>
-        {
-            if (ActivePlayers.Count == 0)
             {
-                dialogs.ShowError("No active players");
-                return;
-            }
-
-            if (ActivePlayers.Count % 2 == 1)
-            {
-                dialogs.ShowError("Active players count must be even");
-                return;
-            }
-
-            var activePlayers = ActivePlayers.ToList();
-            activePlayers.StrongShuffle();
-            var squadsCount = activePlayers.Count / 2;
-
-            Squads.Clear();
-            for (int i = 0; i < squadsCount; i++)
-            {
-                var index1 = 2 * i;
-                var index2 = index1 + 1;
-
-                Squads.Add(new SquadViewModel
+                if (ActivePlayers.Count == 0)
                 {
-                    Number = i + 1,
-                    Player1 = activePlayers[index1],
-                    Player2 = activePlayers[index2]
-                });
-            }
-        });
+                    dialogs.ShowError("No active players");
+                    return;
+                }
+
+                if (ActivePlayers.Count % 2 == 1)
+                {
+                    dialogs.ShowError("Active players count must be even");
+                    return;
+                }
+
+                var activePlayers = ActivePlayers.ToList();
+                activePlayers.StrongShuffle();
+                var squadsCount = activePlayers.Count / 2;
+
+                Squads.Clear();
+                for (int i = 0; i < squadsCount; i++)
+                {
+                    var index1 = 2 * i;
+                    var index2 = index1 + 1;
+
+                    Squads.Add(new SquadViewModel
+                    {
+                        Number = i + 1,
+                        Player1 = activePlayers[index1],
+                        Player2 = activePlayers[index2]
+                    });
+                }
+            });
 
         public ObservableCollection<SquadViewModel> Squads { get; } = new ObservableCollection<SquadViewModel>();
 
@@ -235,7 +235,10 @@ namespace QTableFootball.App.ViewModels
                         Name = x
                     })
                     .OrderBy(x => x.Name);
+
                 allPlayers.AddRange(loadedPlayers);
+                allPlayers.ForEach(x => x.OnSelectedChanged += UpdateHeaders);
+
                 Players.AddRange(allPlayers);
             }
             catch (Exception exc)
@@ -274,7 +277,16 @@ namespace QTableFootball.App.ViewModels
         private void UpdateHeaders()
         {
             PlayersHeader = $"All players - {Players.Count}";
+            if (SelectedPlayers.Count > 0)
+            {
+                PlayersHeader += $" ({SelectedPlayers.Count})";
+            }
+
             ActivePlayersHeader = $"Active players - {ActivePlayers.Count}";
+            if (SelectedActivePlayers.Count > 0)
+            {
+                ActivePlayersHeader += $" ({SelectedActivePlayers.Count})";
+            }
         }
 
         private bool ValidatePlayerName(string name, bool add)

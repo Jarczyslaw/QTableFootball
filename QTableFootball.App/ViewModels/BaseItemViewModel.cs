@@ -1,4 +1,5 @@
 ﻿using JToolbox.Core;
+using System;
 
 namespace QTableFootball.App.ViewModels
 {
@@ -6,10 +7,18 @@ namespace QTableFootball.App.ViewModels
     {
         protected bool isSelected;
 
+        public event Action OnSelectedChanged;
+
         public bool IsSelected
         {
             get => isSelected;
-            set => Set(ref isSelected, value);
+            set
+            {
+                if (Set(ref isSelected, value))
+                {
+                    OnSelectedChanged?.Invoke();
+                }
+            }
         }
     }
 }
