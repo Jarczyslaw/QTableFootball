@@ -1,6 +1,5 @@
 ﻿using JToolbox.Misc.Serializers;
 using System;
-using System.Collections.Generic;
 using System.IO;
 
 namespace QTableFootball.Storage
@@ -9,21 +8,21 @@ namespace QTableFootball.Storage
     {
         private readonly ISerializer serializer = new SerializerJson();
 
-        public string FilePath { get; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "players.json");
+        public string FilePath { get; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "settings.json");
 
-        public List<string> Load()
+        public StorageContent Load()
         {
             if (!File.Exists(FilePath))
             {
-                return new List<string>();
+                return new StorageContent();
             }
 
-            return serializer.FromFile<List<string>>(FilePath);
+            return serializer.FromFile<StorageContent>(FilePath);
         }
 
-        public void Save(List<string> Players)
+        public void Save(StorageContent storage)
         {
-            serializer.ToFile(Players, FilePath);
+            serializer.ToFile(storage, FilePath);
         }
     }
 }

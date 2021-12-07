@@ -4,7 +4,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="QTableFootball"
+    Title="{Binding WindowHeader}"
     Icon="/Resources/ball.png"
     mc:Ignorable="d">
     <Window.Resources>
@@ -58,11 +58,7 @@
                     FontWeight="Bold"
                     Text="{Binding Number}" />
 
-                <TextBlock Grid.Column="1" Text="{Binding Player1.Name}" />
-                <TextBlock
-                    Grid.Row="1"
-                    Grid.Column="1"
-                    Text="{Binding Player2.Name}" />
+                <TextBlock Grid.Column="1" Text="{Binding Players}" />
             </Grid>
         </DataTemplate>
     </Window.Resources>
